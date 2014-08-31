@@ -54,3 +54,49 @@ built in to `sina`.
         --select-step=10 --select-skip=$i
     # This takes more like 20 minutes, and I just have to concatenate my
     # output files in the end.
+
+
+#### 2014-08-30 ####
+I finally got my sequence splitter working.
+I split up all of the rrnDB sequences into 16 files,
+
+    bin/split_seqs.py -n 16 seq/16S.fn seq/splits/16S.split%02d.fn
+
+`scp`ed them to MSU's hpcc and ran `sina` on all of them.
+
+    for file in 16S.split*.fn; do
+        sina -i $file --intype=FASTA -o ${file/.fn/.afn} --outtype=FASTA \
+             --ptdb 16S_ref.arb
+    cat 16S.split*.afn > 16S.afn
+
+This took less than an hour, if I remember correctly.
+
+I then concatenated the resulting alignments, and ran FastTree
+
+    fasttree -nt 16S.afn > 16S.afn.tre
+
+locally (OSX) to estimate a phylogeny.  This took approximately
+9 hours.  I think it would have been much faster if I had ungapped the
+alignment first.
+I'm not sure if this will actually do anything for the full alignment,
+because *some* organism's sequence must be filling those positions, and I'm
+using the full RefSeq database through KEGG.
+
+
+#### 2014-08-31 ####
+I'm going to try and rename the ID's in 16S.afn.tre to something that's
+easier to interpret.
+
+    cat 16S.tsv | awk '{print $1 "\t" $2 "_" $1}' > 16S.id_map.tsv
+
+I've written `bin/rename_tree.py` to import the tree (`Bio.Phylo`),
+rename each leaf, and then export the tree.
+But now I'm finding that `Bio.Phylo` doesn't read the output of FastTree
+correctly; leaf names are read as 'confidence' fields.
+
+I'm not sure if the problem lies with FastTree, `Bio.Phylo`, or me.
+While I can fix it, I don't like the idea of `bin/rename_tree.py` assuming
+that newick trees are in a different format than `Bio.Phylo` does.
+
+    bin/rename_tree.py seq/16S.afn.tre meta/16S.id_map.tsv \
+        > seq/16S.afn.rename.tre
