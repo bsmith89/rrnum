@@ -56,6 +56,10 @@ built in to `sina`.
     # output files in the end.
 
 
+...Except not.  This method just gives me multiple files with the same thing.
+I guess I am going to do the parallelization myself.
+
+
 #### 2014-08-30 ####
 I finally got my sequence splitter working.
 I split up all of the rrnDB sequences into 16 files,
@@ -116,4 +120,52 @@ The fact that the latter is smaller is strong evidence that large distances
 tend to be found under the same genomeid (which makes sense, since we're
 talking about 'all pairwise distances').
 
+I've written an ungapper for aligned sequences, so as to reduce the time
+it takes to estimate the phylogeny.
 
+    bin/remove_gaps.py seq/16S.afn > seq/16S.ungap.afn
+
+It takes about 20 minutes just to identify the gaps, with this many sequences,
+and another 15 to remove them.
+This could be easily parallelized, or maybe better vectorized.
+But altogether, tree creation was MUCH faster!  Only 15 minutes.
+
+I'm trying to figure out how to compare these trees.
+They're *not* identical; I can tell from merely visual inspection.
+With a little research, I find that the Robinson-Foulds distance
+is a standard.
+Downloading the Python package `DendroPy`, I find that there's a
+branch length weighted version.
+I rescale both my original and my ungapped tree, and then
+calculate the RF-distance, which turns out to be 5% of each trees
+branch length.
+I'm not entirely sure, but I think this might mean that they're only
+2.5% 'different' by some definition of difference.
+In Python:
+
+    import dendropy
+
+    a = dendropy.Tree.get_from_path('seq/16S.afn.tre', 'newick')
+    b = dendropy.Tree.get_from_path('tre/16S.ungap.afn.tre', 'newick')
+    a.scale_edges(1 / a.length())  # Scale to total length of 1
+    b.scale_edges(1 / b.length())  # Ditto
+    a.robinson_foulds_distance(b)
+    # Returns 0.0507...
+
+Not entirely sure what to say about this.
+
+Why are the two trees different?  My guess is that `fasttree` is not
+throwing out gap positions, and therefore sequences come off as more similar
+than they really are.
+By removing gaps we remove this non-information.
+I'm not sure if this really explains the different topologies, or what.
+Comparing this '5%' figure to another source of error, when I compare my
+ungapped tree to a tree built from my ungapped data, but using the
+gapped tree as a starting place, and the `-fastest` option in `fasttree`:
+
+    fasttree -nt -fastest -intree seq/16S.afn.tre seq/16S.ungap.afn \
+        > tre/16S.ungap.afn.fastest.tre
+
+I get a normalized difference between this tree and my gapped tree of 0.0335.
+Maybe we can call these "length-weighted Robinson-Foulds distance" or
+something.
