@@ -169,3 +169,14 @@ gapped tree as a starting place, and the `-fastest` option in `fasttree`:
 I get a normalized difference between this tree and my gapped tree of 0.0335.
 Maybe we can call these "length-weighted Robinson-Foulds distance" or
 something.
+
+
+## TODOs ##
+TODO: Collect the relationship between copy number
+      and the copy number of the closest not-same-genome 16S leaf on the
+      tree.
+
+TODO: Further analysis of tree accuracy.
+
+TODO: Consider looking at Bayesian priors for phylogeny, in order
+      to consider our uncertainty in the phylogeny.
