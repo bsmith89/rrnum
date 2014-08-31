@@ -100,3 +100,20 @@ that newick trees are in a different format than `Bio.Phylo` does.
 
     bin/rename_tree.py seq/16S.afn.tre meta/16S.id_map.tsv \
         > seq/16S.afn.rename.tre
+
+I then explored this phylogeny in an ipython notebook
+(`tree_exploration.ipynb`) and output some data.
+Specifically, `tre/distances.txt` is a file with one row per genomeid.
+Each row is composed of the genomeid, a tab, and then a comma separated list of
+all of the pairwise distances between the sequences which were placed on that
+tree from that genome.
+
+From 10056 sequences on the tree, there were 2602 unique genomeids, and
+1260 genomes had 16S features with divergent sequences.
+Of these, the average distance was 0.033, and the mean per-genome maximum
+distance was 0.032.
+The fact that the latter is smaller is strong evidence that large distances
+tend to be found under the same genomeid (which makes sense, since we're
+talking about 'all pairwise distances').
+
+
