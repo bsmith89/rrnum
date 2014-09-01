@@ -183,7 +183,26 @@ Let's get started:
         > tre/16S.ungap.afn.rename.tre
 
 
+### 2014-09-01 ###
+Today I made a figure showing the change in the $R^2$ (in a regression
+of copy number against mate's copy number in a random set of leaf pairs)
+over a range of cutoff distances between pairs.
 
+![](res/2014-09-01_fig1.png)
+
+More descriptively, random branch-tip pairs were sampled from the tree.
+~~These pairs, with some low probability, may have included features from the
+same genome.~~
+Pairs from the same genome were removed from downstream analysis.
+The distances between pairs on the tree were then measured, and copy numbers
+associated with each's genome were recorded.
+The copy number of the first of the pair was then regressed against
+the copy number of the second, producing a regression coefficient (with
+confidence bounds), and the $R^2$.
+This regression was repeated after having cut the pairs to be less than a
+given distance.
+The $R^2$ and estimator/ci were plotted against this maximum distance.
+Overlayed (right Y-axis) is a normalized histogram of mate-pairs.
 
 ## TODOs ##
 TODO: Collect the relationship between copy number
