@@ -5,7 +5,7 @@ Basically, I'm going to try to asses how well our database informs us of
 the copy number of a random sequence.
 
 
-#### 2014-08-29 ####
+### 2014-08-29 ###
 I received `rrnDBv1_16S_byron_2014-08-29.fasta` and
 `rrnDBv1_16S_byron_2014-08-29.meta` from Steve Stoddard.
 
@@ -60,7 +60,7 @@ built in to `sina`.
 I guess I am going to do the parallelization myself.
 
 
-#### 2014-08-30 ####
+### 2014-08-30 ###
 I finally got my sequence splitter working.
 I split up all of the rrnDB sequences into 16 files,
 
@@ -87,7 +87,7 @@ because *some* organism's sequence must be filling those positions, and I'm
 using the full RefSeq database through KEGG.
 
 
-#### 2014-08-31 ####
+### 2014-08-31 ###
 I'm going to try and rename the ID's in 16S.afn.tre to something that's
 easier to interpret.
 
@@ -169,6 +169,20 @@ gapped tree as a starting place, and the `-fastest` option in `fasttree`:
 I get a normalized difference between this tree and my gapped tree of 0.0335.
 Maybe we can call these "length-weighted Robinson-Foulds distance" or
 something.
+
+#### Correlation in rrn count across the phylogeny ####
+Here I intend to look at the correlation between rrn copy number
+of nearby leaves in the phylogeny.
+
+I will do this first by walking through a list of leaves and finding the
+copy number of the closest neighbor that is *not* from the same genome.
+
+Let's get started:
+
+    bin/rename_tree.py tre/16S.ungap.afn.tre meta/16S.id_map.tsv \
+        > tre/16S.ungap.afn.rename.tre
+
+
 
 
 ## TODOs ##
