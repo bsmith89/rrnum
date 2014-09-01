@@ -9,52 +9,59 @@ the copy number of a random sequence.
 I received `rrnDBv1_16S_byron_2014-08-29.fasta` and
 `rrnDBv1_16S_byron_2014-08-29.meta` from Steve Stoddard.
 
-    cat seq/16S.fn | grep '^>' | sort | uniq -d
-    # Returns Nothing
-    cat seq/16S.fn | grep '^>' -c
-    # Returns '10056'
-    # Their are this many sequences.
+```bash
+cat seq/16S.fn | grep '^>' | sort | uniq -d
+# Returns Nothing
+cat seq/16S.fn | grep '^>' -c
+# Returns '10056'
+# Their are this many sequences.
+```
 
 On the MSU HPCC (because
 (`sina`)[http://www.arb-silva.de/aligner/sina-download/] doesn't run on OSX),
 I downloaded `sina` and the aligned reference NR.
 
-    mkdir scratch; cd scratch
-    curl -O http://www.arb-silva.de/fileadmin/silva_databases/SINA/1.2.11/sina-1.2.11_centos5_amd64.tgz
-    # Downloads 3.417k
-    tar -xzf sina-1.2.11_cenos5_amd64.tgz
-    ln -s sina-1.2.11/sina sina
-    curl -O http://www.arb-silva.de/fileadmin/silva_databases/release_119/Exports/SILVA_119_SSURef_Nr99_tax_silva_full_align_trunc.fasta.gz
-    # Downloads 1061M
-    gunzip SILVA_119_SSURef_Nr99_tax_silva_full_align_trunc.fasta.gz
-    # Takes a little while to run.  It's 26GB...!
-    # I don't even think I can run this next command:
-    cat SILVA_119_SSURef_Nr99_tax_silva_full_align_trunc.fasta | grep '^>' -c
-    # Yep, it's taking forever.
-    # Output: 534968  Finally.  Half a million sequences!
-    sina -i SILVA_119_SSURef_Nr99_tax_silva_full_align_trunc.fasta -o 16S_ref.arb
+```bash
+mkdir scratch; cd scratch
+curl -O http://www.arb-silva.de/fileadmin/silva_databases/SINA/1.2.11/sina-1.2.11_centos5_amd64.tgz
+# Downloads 3.417k
+tar -xzf sina-1.2.11_cenos5_amd64.tgz
+ln -s sina-1.2.11/sina sina
+curl -O http://www.arb-silva.de/fileadmin/silva_databases/release_119/Exports/SILVA_119_SSURef_Nr99_tax_silva_full_align_trunc.fasta.gz
+# Downloads 1061M
+gunzip SILVA_119_SSURef_Nr99_tax_silva_full_align_trunc.fasta.gz
+# Takes a little while to run.  It's 26GB...!
+# I don't even think I can run this next command:
+cat SILVA_119_SSURef_Nr99_tax_silva_full_align_trunc.fasta | grep '^>' -c
+# Yep, it's taking forever.
+# Output: 534968  Finally.  Half a million sequences!
+sina -i SILVA_119_SSURef_Nr99_tax_silva_full_align_trunc.fasta -o 16S_ref.arb
+```
 
 This was going to take numerous hours to run.  Turns out there's a much
 simpler way.
 
-    curl -o 16S_ref.arb http://www.arb-silva.de/fileadmin/silva_databases/release_119/ARB_files/SSURef_NR99_119_SILVA_14_07_14_opt.arb
-    # This is the pre-built ARB database for sina
-    # Now I can align with just:
-    sina -i 16S.fn --intype=FASTA -o 16S.afn --outtype=FASTA --ptdb 16S_ref.arb
+```bash
+curl -o 16S_ref.arb http://www.<arb-silva.de/fileadmin/silva_databases/release_119/ARB_files/SSURef_NR99_119_SILVA_14_07_14_opt.arb
+# This is the pre-built ARB database for sina
+# Now I can align with just:
+sina -i 16S.fn --intype=FASTA -o 16S.afn --outtype=FASTA --ptdb 16S_ref.arb
+```
 
 Alignment is now the time limiting step.
 Instead of parallelizing myself, I'm going to use the ad-hoc parallelization
 built in to `sina`.
 
-    # Reformat the sequences as ARB
-    sina -i 16S.afn --intype=FASTA -o 16S.arb --prealigned
-    # Do an offset/skip run on the ARB file.
-    for i in $(seq 1 10); do
-        sina -i 16S.arb -o 16S.f$i.afn --ptdb 16S_ref.arb
-        --select-step=10 --select-skip=$i
-    # This takes more like 20 minutes, and I just have to concatenate my
-    # output files in the end.
-
+```bash
+# Reformat the< sequences as ARB
+sina -i 16S.afn --intype=FASTA -o 16S.arb --prealigned
+# Do an offset/skip run on the ARB file.
+for i in $(seq 1 10); do
+    sina -i 16S.arb -o 16S.f$i.afn --ptdb 16S_ref.arb
+    --select-step=10 --select-skip=$i
+# This takes more like 20 minutes, and I just have to concatenate my
+# output files in the end.
+```
 
 ...Except not.  This method just gives me multiple files with the same thing.
 I guess I am going to do the parallelization myself.
@@ -64,20 +71,26 @@ I guess I am going to do the parallelization myself.
 I finally got my sequence splitter working.
 I split up all of the rrnDB sequences into 16 files,
 
-    bin/split_seqs.py -n 16 seq/16S.fn seq/splits/16S.split%02d.fn
+```bash
+bin/split_seqs.py< -n 16 seq/16S.fn seq/splits/16S.split%02d.fn
+```
 
 `scp`ed them to MSU's hpcc and ran `sina` on all of them.
 
-    for file in 16S.split*.fn; do
-        sina -i $file --intype=FASTA -o ${file/.fn/.afn} --outtype=FASTA \
-             --ptdb 16S_ref.arb
-    cat 16S.split*.afn > 16S.afn
+```bash
+for file in 16S<.split*.fn; do
+    sina -i $file --intype=FASTA -o ${file/.fn/.afn} --outtype=FASTA \
+            --ptdb 16S_ref.arb
+cat 16S.split*.afn > 16S.afn
+```
 
 This took less than an hour, if I remember correctly.
 
 I then concatenated the resulting alignments, and ran FastTree
 
-    fasttree -nt 16S.afn > 16S.afn.tre
+```bash
+fasttree -nt 16S.afn > 16S.afn.tre
+```
 
 locally (OSX) to estimate a phylogeny.  This took approximately
 9 hours.  I think it would have been much faster if I had ungapped the
@@ -91,7 +104,9 @@ using the full RefSeq database through KEGG.
 I'm going to try and rename the ID's in 16S.afn.tre to something that's
 easier to interpret.
 
-    cat 16S.tsv | awk '{print $1 "\t" $2 "_" $1}' > 16S.id_map.tsv
+```bash
+cat 16S.tsv | awk '{print $1 "\t" $2 "_" $1}' > 16S.id_map.tsv
+```
 
 I've written `bin/rename_tree.py` to import the tree (`Bio.Phylo`),
 rename each leaf, and then export the tree.
@@ -102,8 +117,10 @@ I'm not sure if the problem lies with FastTree, `Bio.Phylo`, or me.
 While I can fix it, I don't like the idea of `bin/rename_tree.py` assuming
 that newick trees are in a different format than `Bio.Phylo` does.
 
-    bin/rename_tree.py seq/16S.afn.tre meta/16S.id_map.tsv \
-        > seq/16S.afn.rename.tre
+```bash
+bin/rename_tree.py seq/16S.afn.tre meta/16S.id_map.tsv \
+    > seq/16S.afn.rename.tre
+```
 
 I then explored this phylogeny in an ipython notebook
 (`tree_exploration.ipynb`) and output some data.
@@ -123,7 +140,9 @@ talking about 'all pairwise distances').
 I've written an ungapper for aligned sequences, so as to reduce the time
 it takes to estimate the phylogeny.
 
-    bin/remove_gaps.py seq/16S.afn > seq/16S.ungap.afn
+```bash
+bin/remove_gaps.py seq/16S.afn > seq/16S.ungap.afn
+```
 
 It takes about 20 minutes just to identify the gaps, with this many sequences,
 and another 15 to remove them.
@@ -143,14 +162,16 @@ I'm not entirely sure, but I think this might mean that they're only
 2.5% 'different' by some definition of difference.
 In Python:
 
-    import dendropy
+```python
+import dendropy
 
-    a = dendropy.Tree.get_from_path('seq/16S.afn.tre', 'newick')
-    b = dendropy.Tree.get_from_path('tre/16S.ungap.afn.tre', 'newick')
-    a.scale_edges(1 / a.length())  # Scale to total length of 1
-    b.scale_edges(1 / b.length())  # Ditto
-    a.robinson_foulds_distance(b)
-    # Returns 0.0507...
+a = dendropy.Tree.get_from_path('seq/16S.afn.tre', 'newick')
+b = dendropy.Tree.get_from_path('tre/16S.ungap.afn.tre', 'newick')
+a.scale_edges(1 / a.length())  # Scale to total length of 1
+b.scale_edges(1 / b.length())  # Ditto
+a.robinson_foulds_distance(b)
+# Returns 0.0507...
+```
 
 Not entirely sure what to say about this.
 
@@ -163,8 +184,10 @@ Comparing this '5%' figure to another source of error, when I compare my
 ungapped tree to a tree built from my ungapped data, but using the
 gapped tree as a starting place, and the `-fastest` option in `fasttree`:
 
-    fasttree -nt -fastest -intree seq/16S.afn.tre seq/16S.ungap.afn \
-        > tre/16S.ungap.afn.fastest.tre
+```bash
+fasttree -nt -fastest -intree seq/16S.afn.tre seq/16S.ungap.afn \
+    > tre/16S.ungap.afn.fastest.tre
+```
 
 I get a normalized difference between this tree and my gapped tree of 0.0335.
 Maybe we can call these "length-weighted Robinson-Foulds distance" or
@@ -179,8 +202,10 @@ copy number of the closest neighbor that is *not* from the same genome.
 
 Let's get started:
 
-    bin/rename_tree.py tre/16S.ungap.afn.tre meta/16S.id_map.tsv \
-        > tre/16S.ungap.afn.rename.tre
+```bash
+bin/rename_tree.py tre/16S.ungap.afn.tre meta/16S.id_map.tsv \
+    > tre/16S.ungap.afn.rename.tre
+```
 
 
 ### 2014-09-01 ###
@@ -212,4 +237,4 @@ TODO: Collect the relationship between copy number
 TODO: Further analysis of tree accuracy.
 
 TODO: Consider looking at Bayesian priors for phylogeny, in order
-      to consider our uncertainty in the phylogeny.
+      to account for our uncertainty in the phylogeny.
