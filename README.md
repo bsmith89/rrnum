@@ -229,6 +229,26 @@ given distance.
 The $R^2$ and estimator/ci were plotted against this maximum distance.
 Overlayed (right Y-axis) is a normalized histogram of mate-pairs.
 
+
+### 2014-09-02 ###
+I remade the figure from yesterday, but this time rescaled by the distance
+between 2831_3169705 (Escherichia coli str. K-12 substr. MG1655),
+and 622_7088178
+(Salmonella enterica subsp. enterica serovar Typhimurium str. D23580).
+
+![](res/2014-09-01_fig1_norm.png)
+
+I think these represent two commonly understood strains, which are known
+to be closely related.
+They also diverged 100-160 Ma according to Meysman et al. (2013).
+That article says:
+
+> Current estimates put the divergence of the E. coli and S. Typhimurium
+> strains approximately 100–160 Ma, which is about the same time frame as the
+> divergence of the placental mammals (Kumar and Hedges 1998).
+
+E. coli and Salmonella also both have 7 rrn operons.
+
 ## TODOs ##
 TODO: Collect the relationship between copy number
       and the copy number of the closest not-same-genome 16S leaf on the
