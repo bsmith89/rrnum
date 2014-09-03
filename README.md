@@ -213,7 +213,7 @@ Today I made a figure showing the change in the $R^2$ (in a regression
 of copy number against mate's copy number in a random set of leaf pairs)
 over a range of cutoff distances between pairs.
 
-![](res/2014-09-01_fig1.png)
+![](static/2014-09-01_fig1.png)
 
 More descriptively, random branch-tip pairs were sampled from the tree.
 ~~These pairs, with some low probability, may have included features from the
@@ -236,7 +236,7 @@ between 2831_3169705 (Escherichia coli str. K-12 substr. MG1655),
 and 622_7088178
 (Salmonella enterica subsp. enterica serovar Typhimurium str. D23580).
 
-![](res/2014-09-01_fig1_norm.png)
+![](static/2014-09-02_fig1_norm.png)
 
 I think these represent two commonly understood strains, which are known
 to be closely related.
