@@ -249,12 +249,39 @@ That article says:
 
 E. coli and Salmonella also both have 7 rrn operons.
 
+After lab meeting, I redid the analysis with percent identity, instead of
+branch length as a measure of evolutionary distance/nearness.
+This works very similarly.
+
+I've also realized that $R^2$ is not really the best metric for our ability to
+predict.  Really I should be using MSE, or something like that.
+As a third adjustment, I'm now using a moving window, instead of a cutoff,
+since there's no reason to overestimate our accuracy at high distances
+by including a bunch of sequences from a lower distance.
+
+I'm still getting regression slopes that are significantly different from
+zero, which suggests that I am not getting an unbiased estimate of copy
+number at higher distances between sequences.
+
+### 2014-09-02 ###
+I've redone the analysis, this time with 1e5 pairs, instead of 1e4.
+During this process I've realized that copy number is bounded at 1,
+so a linear regression is not a very good method.  The Pearson's correlation
+coefficient ($r$) is still somewhat resonable, but not entirely.
+Maybe I should be looking into various logistic regressions...?
+
+I've saved the 1e5 data to the `res/` directory, so that I don't need to
+regenerate all of it while I'm doing analysis.
+I really _should_ save a script to regenerate all of it.
+Maybe include a random seed, too, so that I get the same dataset every time.
+
+
+
 ## TODOs ##
-TODO: Collect the relationship between copy number
-      and the copy number of the closest not-same-genome 16S leaf on the
-      tree.
-
-TODO: Further analysis of tree accuracy.
-
-TODO: Consider looking at Bayesian priors for phylogeny, in order
-      to account for our uncertainty in the phylogeny.
+- TODO: Collect the relationship between copy number
+        and the copy number of the closest not-same-genome 16S leaf on the
+        tree.
+- TODO: Further analysis of tree accuracy.
+- TODO: Consider looking at Bayesian priors for phylogeny, in order
+        to account for our uncertainty in the phylogeny.
+- TODO: Look at the 
