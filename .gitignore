@@ -5,11 +5,11 @@
 
 
 # Ignore these directories
-res/
-seq/
-raw/
-meta/
-tre/
+res/*
+seq/*
+raw/*
+meta/*
+tre/*
 
 # But white-list these files
-*/README.md
+!*/README.md

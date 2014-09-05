@@ -1,5 +1,5 @@
 ## Source ##
-Steve Stoddard made these two files for me from rrnDB.
+Steve Stoddard made these files for me from rrnDB.
 
 ## Files ##
 ### Sequence ###
@@ -60,3 +60,36 @@ order by s.genomeid, s.fid
 Tab separated values of the metadata associated with each FID.
 This file allows me to map rrn copy numbers (associated with each genome)
 to each sequence.
+
+### Problem Sequences and Metadata ###
+#### Paths: ####
+
+    ./rrnDBv1_16S_byron_problem-seqs_2014-09-04.*
+
+#### Format: ####
+Same as above except `rrnDBv1_16S_byron_2014-09-04.metadata` has an
+additional column and a different query.
+Its headers are:
+
+    #fid	genomeid	taxid	rrncopy	orgname	length(s.seq)
+
+#### SQL queries: ####
+
+```sql
+Database=rrndb3;
+SELECT s.fid, s.genomeid, tn.taxid, g.sum16s, tn.name, length(s.seq)
+FROM sequence s, genome g, taxname tn
+WHERE s.genomeid IN (336, 591, 1106, 1508, 2330, 2476, 1907, 2212) AND
+      s.genomeid=g.genomeid AND
+      g.taxnameid=tn.taxnameid
+ORDER BY s.genomeid, s.fid
+```
+
+#### Description ####
+These sequences represent those which did _not_ pass the size filter
+used by Steve, but that come from genomes in which other sequences did pass
+the size filter.
+As of now, these sequences are included in the rrnDB, despite failing the size
+cutoff.
+Steve S. has asked me to add them to my analysis in order to determine
+what's going on.
