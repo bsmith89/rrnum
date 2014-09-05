@@ -32,6 +32,16 @@ seq/16S.arb: seq/16S.fn
 #	cat $@.temp*.afn > $@
 #	rm $@.temp*.afn
 
+pandoc_recipe = \
+pandoc -f markdown_github -t html5 -s \
+       --highlight-style pygments --mathjax \
+       --toc --toc-depth=4 \
+       <$< >$@
+%/README.html: %/README.md
+	$(pandoc_recipe)
+README.html: README.md
+	$(pandoc_recipe)
+
 clean:
-	rm -f ref/*.arb.log
+	rm -f ref/*.arb.log */README.html
 

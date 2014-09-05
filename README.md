@@ -1,3 +1,4 @@
+## Introduction ##
 This is an analysis of the amount of copy number information available to us
 from 16S sequence.
 
@@ -5,6 +6,7 @@ Basically, I'm going to try to asses how well our database informs us of
 the copy number of a random sequence.
 
 
+## Notebook ##
 ### 2014-08-29 ###
 I received `rrnDBv1_16S_byron_2014-08-29.fasta` and
 `rrnDBv1_16S_byron_2014-08-29.meta` from Steve Stoddard.
@@ -53,7 +55,7 @@ Instead of parallelizing myself, I'm going to use the ad-hoc parallelization
 built in to `sina`.
 
 ```bash
-# Reformat the< sequences as ARB
+# Reformat the sequences as ARB
 sina -i 16S.afn --intype=FASTA -o 16S.arb --prealigned
 # Do an offset/skip run on the ARB file.
 for i in $(seq 1 10); do
@@ -209,7 +211,7 @@ bin/rename_tree.py tre/16S.ungap.afn.tre meta/16S.id_map.tsv \
 
 
 ### 2014-09-01 ###
-Today I made a figure showing the change in the $R^2$ (in a regression
+Today I made a figure showing the change in the \(R^2\) (in a regression
 of copy number against mate's copy number in a random set of leaf pairs)
 over a range of cutoff distances between pairs.
 
@@ -223,10 +225,10 @@ The distances between pairs on the tree were then measured, and copy numbers
 associated with each's genome were recorded.
 The copy number of the first of the pair was then regressed against
 the copy number of the second, producing a regression coefficient (with
-confidence bounds), and the $R^2$.
+confidence bounds), and the \(R^2\).
 This regression was repeated after having cut the pairs to be less than a
 given distance.
-The $R^2$ and estimator/ci were plotted against this maximum distance.
+The \(R^2\) and estimator/ci were plotted against this maximum distance.
 Overlayed (right Y-axis) is a normalized histogram of mate-pairs.
 
 
@@ -253,7 +255,7 @@ After lab meeting, I redid the analysis with percent identity, instead of
 branch length as a measure of evolutionary distance/nearness.
 This works very similarly.
 
-I've also realized that $R^2$ is not really the best metric for our ability to
+I've also realized that \(R^2\) is not really the best metric for our ability to
 predict.  Really I should be using MSE, or something like that.
 As a third adjustment, I'm now using a moving window, instead of a cutoff,
 since there's no reason to overestimate our accuracy at high distances
@@ -263,11 +265,11 @@ I'm still getting regression slopes that are significantly different from
 zero, which suggests that I am not getting an unbiased estimate of copy
 number at higher distances between sequences.
 
-### 2014-09-02 ###
+### 2014-09-03 ###
 I've redone the analysis, this time with 1e5 pairs, instead of 1e4.
 During this process I've realized that copy number is bounded at 1,
 so a linear regression is not a very good method.  The Pearson's correlation
-coefficient ($r$) is still somewhat resonable, but not entirely.
+coefficient (\(r\)) is still somewhat resonable, but not entirely.
 Maybe I should be looking into various logistic regressions...?
 
 I've saved the 1e5 data to the `res/` directory, so that I don't need to
