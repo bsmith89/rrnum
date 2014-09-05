@@ -12,6 +12,7 @@ seq/*
 raw/*
 meta/*
 tre/*
+img/*
 
 # But white-list these files
 !*/README.md
