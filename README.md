@@ -5,6 +5,9 @@ from 16S sequence.
 Basically, I'm going to try to asses how well our database informs us of
 the copy number of a random sequence.
 
+## How to use this README ##
+I don't guarantee that `*.ipynb` files will execute.
+I DO 'guarentee' that `Makefile`s will execute.
 
 ## Notebook ##
 ### 2014-08-29 ###
@@ -16,7 +19,7 @@ cat seq/16S.fn | grep '^>' | sort | uniq -d
 # Returns Nothing
 cat seq/16S.fn | grep '^>' -c
 # Returns '10056'
-# Their are this many sequences.
+# There are this many sequences.
 ```
 
 On the MSU HPCC (because
@@ -277,6 +280,55 @@ regenerate all of it while I'm doing analysis.
 I really _should_ save a script to regenerate all of it.
 Maybe include a random seed, too, so that I get the same dataset every time.
 
+#### Removing outliers ####
+I've talked a bit with Steve about outlier sequences, whether because of the
+way they show up in the database or because of where they occur in the tree
+(_very_ long branches).
+Taking a quick look at which genomes are represented in the 'outlier' group
+on my tree, I find that several of them are from the same genomes.
+This would normally suggest to me that it's not just a one-off annotation
+error.
+It is worth remembering, however, that each genome is being annotated by a
+single group, so annotation errors are not independent.
+
+This explanation appears to be correct.
+When I align just these sequences using SILVA, and get taxonomic identification
+as well, the outlier sequences not only lack identitity with anything in the
+database, but also the algorithm can't even figure out which way to
+orient the sequence.
+So these probably aren't real 16S.
+This is further confirmed by a `BLAST` search, which hits a lot of other stuff
+(not 16S), and not just the original sequence.
+
+Since these sequences have the potential to mess with my analysis, I've
+removed them from my aligned sequences:
+
+    from Bio.Phylo import read as read_tree
+
+    tree = read_tree('tre/16S.ungap.afn.rename.tre', 'newick')
+    outlier_clade = tree.common_ancestor('1572_992299', '1419_22388')
+    # Two sequences that I found, via visual inspection to be
+    # as disparate as possible within the outlier clade.
+
+    fids = []
+    gids = []
+    for leaf in outlier_clade.get_terminals():
+        gid, fid = leaf.name.split('_')
+        gids.append(gid)
+        fids.append(fid)
+
+    all_inliers = []
+    fid_set = set(fids)
+    for rec in parse_seqs("seq/16S.ungap.afn", 'fasta'):
+        if rec.name not in fid_set:
+            all_inliers.append(rec)
+    write_seqs(all_inliers, "seq/16S.ungap.no-out.afn", 'fasta')
+
+I then ran fasttree again, in order to examine the effect on the phylogeny.
+
+    fasttree -nt seq/16S.ungap.no-out.afn >tre/16S.ungap.no-out.afn
+
+This phylogeny looks a ton better.
 
 
 ## TODOs ##
@@ -287,3 +339,7 @@ Maybe include a random seed, too, so that I get the same dataset every time.
 - TODO: Consider looking at Bayesian priors for phylogeny, in order
         to account for our uncertainty in the phylogeny.
 - TODO: Look at the 
+- TODO: Fix everything up so that Makefiles and IPython Notebooks execute.
+- TODO: Compare the Robinson-Foulds distance of the original tree, made with
+        outliers but where outliers have been removed, to the tree remade
+        without outliers in the alignment.

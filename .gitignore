@@ -2,6 +2,8 @@
 *.swp
 .ipynb_checkpoints/
 *.pyc
+*/README.html
+README.html
 
 
 # Ignore these directories
