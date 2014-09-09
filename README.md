@@ -6,8 +6,9 @@ Basically, I'm going to try to asses how well our database informs us of
 the copy number of a random sequence.
 
 ## How to use this README ##
-I don't guarantee that `*.ipynb` files will execute.
-I DO 'guarentee' that `Makefile`s will execute.
+~~I don't guarantee that `*.ipynb` files will execute.
+I DO 'guarentee' that `Makefile`s will execute.~~
+(I'd like to guarantee these things, but I don't at the moment.)
 
 ## Notebook ##
 ### 2014-08-29 ###
@@ -303,6 +304,7 @@ This is further confirmed by a `BLAST` search, which hits a lot of other stuff
 Since these sequences have the potential to mess with my analysis, I've
 removed them from my aligned sequences:
 
+```python
     from Bio.Phylo import read as read_tree
 
     tree = read_tree('tre/16S.ungap.afn.rename.tre', 'newick')
@@ -323,6 +325,7 @@ removed them from my aligned sequences:
         if rec.name not in fid_set:
             all_inliers.append(rec)
     write_seqs(all_inliers, "seq/16S.ungap.no-out.afn", 'fasta')
+```
 
 I then ran fasttree again, in order to examine the effect on the phylogeny.
 

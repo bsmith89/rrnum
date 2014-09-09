@@ -14,3 +14,9 @@ composed of gaps ('-') removed.
 `*.head.*` and `*.tail.*` are files which only represent the top or bottom
 fractions of the dataset, respectively.  These are to be used as sample data
 in testing scripts.
+
+`*.probseqs.*` is a file composed of only the 46 "problem" sequences identified
+by Steve S.
+
+`*.with_probseqs.*` is a file composed of _all_ sequences, including problem
+sequences.
