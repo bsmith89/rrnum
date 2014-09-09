@@ -331,6 +331,23 @@ I then ran fasttree again, in order to examine the effect on the phylogeny.
 This phylogeny looks a ton better.
 
 
+### 2014-09-09 ###
+#### Problem Sequences ####
+Steve sent me a set of 46 sequences which were removed from analysis due to
+being too long or too short, but which came from genomes with other
+sequences of the correct length range.
+I'm not sure, but I think Steve said that these genomes come from clades
+with copy numbers which match when _including_ the "problem seqs".
+I've aligned them using SINA (the web application, since it was too much
+trouble to do it locally), and all 46 of them align well, with high identity.
+
+I've downloaded the file from SINA Online and moved it to
+
+    ./seq/16S_probseqs.afn
+
+I'll re-make the tree on FLUX and see where they come out.
+
+
 ## TODOs ##
 - TODO: Collect the relationship between copy number
         and the copy number of the closest not-same-genome 16S leaf on the
@@ -338,7 +355,6 @@ This phylogeny looks a ton better.
 - TODO: Further analysis of tree accuracy.
 - TODO: Consider looking at Bayesian priors for phylogeny, in order
         to account for our uncertainty in the phylogeny.
-- TODO: Look at the 
 - TODO: Fix everything up so that Makefiles and IPython Notebooks execute.
 - TODO: Compare the Robinson-Foulds distance of the original tree, made with
         outliers but where outliers have been removed, to the tree remade
