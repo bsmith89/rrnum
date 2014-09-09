@@ -7,7 +7,11 @@ from numpy import array, ones_like
 
 
 def main():
-    alignment = AlignIO.read(sys.argv[1], 'fasta')
+    try:
+        infile = sys.argv[1]  # AlignIO.read can take a handle or a path
+    except IndexError:
+        infile = sys.stdin
+    alignment = AlignIO.read(infile, 'fasta')
     ncols = alignment.get_alignment_length()
     nseqs = len(alignment)
     empty_cols = []
