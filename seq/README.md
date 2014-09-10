@@ -15,8 +15,9 @@ composed of gaps ('-') removed.
 fractions of the dataset, respectively.  These are to be used as sample data
 in testing scripts.
 
-`*.probseqs.*` is a file composed of only the 46 "problem" sequences identified
-by Steve S.
+`*.probseqs.*` is a file composed of only the ~~46 "problem" sequences identified
+by Steve S.~~ 32 _uniq_ problem sequences provided by Steve.
+
 
 `*.with_probseqs.*` is a file composed of _all_ sequences, including problem
 sequences.

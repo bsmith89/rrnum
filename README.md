@@ -346,10 +346,30 @@ trouble to do it locally), and all 46 of them align well, with high identity.
 
 I've downloaded the file from SINA Online and moved it to
 
-    ./seq/16S_probseqs.afn
+    ./seq/16S.probseqs.afn
 
 I'll re-make the tree on FLUX and see where they come out.
 
+I'm having trouble because the SINA Online output includes unaligned
+nucleotides as lowercase letters at the ends of the alignment.
+
+Also, for some reason there are 14 sequences which are found in both files.
+
+```bash
+cat seq/16S.probseqs.afn seq/16S.afn \
+    | grep '^>' \
+    | sort \
+    | uniq -c
+# Prints 14 sequence names preceeded by a '>'
+```
+
+### 2014-09-09 ###
+#### Problem Sequences (cont.) ####
+I redid the alignment, this time truncating unaligned nucleotides.
+This alignment was downloaded as `seq/16S.probseqs.afn` and some
+metadata, was downloaded as `16S.probseqs.align-res.tsv`.
+These results show that all of the sequences had nucleotides cut off of their
+$5'$ or $3'$ ends.
 
 ## TODOs ##
 - TODO: Collect the relationship between copy number
