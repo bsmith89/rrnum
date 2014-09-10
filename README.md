@@ -10,6 +10,31 @@ the copy number of a random sequence.
 I DO 'guarentee' that `Makefile`s will execute.~~
 (I'd like to guarantee these things, but I don't at the moment.)
 
+## Meta TODOs ##
+```
+TODO: Decide how to deal with code updates that break a past analysis or
+      a part of a notebook.
+TODO: How to deal with conventions that I want to reproduce across projects?
+TODO: How do I version control PBS scripts?
+```
+
+## Directory Structure and Conventions ##
+This project serves as a template for computational work done in a
+'reproducible' manner.
+For that reason, I will attempt to explain the directory structure, and
+naming conventions that I used.
+
+### `Makefile` ###
+`make all` should reproduce the full analysis.
+
+### `raw/` ###
+`raw/` is the only directory that should contain version controlled data.
+Even this isn't usually a good idea.
+Data _should_ be backed up, however.
+
+## Requirements ##
+Exactly what is required to run all of these analyses?
+
 ## Notebook ##
 ### 2014-08-29 ###
 I received `rrnDBv1_16S_byron_2014-08-29.fasta` and
@@ -362,6 +387,23 @@ cat seq/16S.probseqs.afn seq/16S.afn \
     | uniq -c
 # Prints 14 sequence names preceeded by a '>'
 ```
+
+I've removed those sequences using
+`bin/remove_seqs.py file_listing_ids < seqs.fn > fewer-seqs.fn`.
+I then remove the FIDs listed in `res/outlier_seqs.tsv`.
+
+```bash
+bin/remove_seqs.py \
+    <(cat res/outlier_seqs.tsv \
+          | awk '{print $1}' \
+          | sed 1d) \
+    < seq/16S.with-probs.ungap.afn \
+    > seq/16S.with-probs.ungap.no-out.afn
+```
+
+That file will then be used to make a tree.
+
+Dang!  With 16 procs, it only took ~10 minutes!
 
 ### 2014-09-09 ###
 #### Problem Sequences (cont.) ####

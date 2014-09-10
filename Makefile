@@ -4,6 +4,8 @@ RAW_META = raw/rrnDBv1_16S_byron_2014-08-29.meta
 SILVA_REF_URL = http://www.arb-silva.de/fileadmin/silva_databases/release_119/ARB_files/SSURef_NR99_119_SILVA_14_07_14_opt.arb
 READMES = $(subst .md,.html,README.md $(wildcard */README.md))
 
+all: docs
+
 docs: $(READMES)
 
 seq/16S.fn: $(RAW_FN)
