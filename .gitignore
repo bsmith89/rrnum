@@ -13,6 +13,7 @@ raw/*
 meta/*
 tre/*
 img/*
+fig/*
 
 # But white-list these files
 !*/README.md
