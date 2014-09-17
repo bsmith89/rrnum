@@ -44,6 +44,10 @@ seq/16S.with_probseqs.fn: seq/16S.fn seq/16S.probseqs.fn
 seq/16S.with_probseqs.afn: seq/16S.with_probseqs.fn ref/16S_ref.arb
 	sina -i $< --intype=FASTA -o $@ --outttype=FASTA --ptdb 16S_ref.arb
 
+fig/ident_vs_error.png: bin/ident_vs_error.py res/16S.dists.sample.tsv
+	@mkdir -p $(@D)
+	$^
+
 pandoc_recipe = \
 pandoc -f markdown -t html5 -s \
        --highlight-style pygments --mathjax \

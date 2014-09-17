@@ -413,6 +413,70 @@ metadata, was downloaded as `16S.probseqs.align-res.tsv`.
 These results show that all of the sequences had nucleotides cut off of their
 $5'$ or $3'$ ends.
 
+### 2014-09-16 ###
+#### Propagating Copy Number Down Phylogenies ####
+Here I attempt to estimate (in a very rough way) ancestral copy numbers by
+propagating back copy number from the tips of a phylogenetic tree.
+
+This is fairly straight forward, see `ipynb/max-pars-counts.ipynb`.
+
+### 2014-09-17 ###
+#### Improved Assesment of Copy Number Correlation ####
+Here I will attempt to measure the amount of copy number correlation between
+pairs of sequences across a gradient of sequence similarity.
+
+Specifically, I would like to measure the deviation from having the same
+copy number.
+I can imagine doing this as the sum of squared deviation from equal numbers.
+Whether this is sum of squared log2(deviation) remains to be decided.
+In order to carry this out, I'm going to use the `16S.dists.sample.tsv`
+file created by sampling from $10056^2 \approx 10^8$ possible sequence
+comparisons.
+For each comparison, I'm going to examine the copy number deviation between the
+genomes which sequences belong to, as well as the percent sequence identity.
+I should be able to fit a spline and confidence interval over this data.
+
+(16:45) Ultimately, I was able to do what I set out to do.  I even think I have
+a pretty good visualization of the increase in copy number deviation with
+increased sequence distance.
+
+This analysis was based on a summary statistic akin to variance.
+The sequence pairs data from `16S.dists.sample.tsv` was transformed
+to a measure of deviation $\log_2(\frac{c_1}{c_2})$.
+In other words, the fold deviation between sequences.
+I $\log_2$ transform to evenly array these values on either side of zero.
+A deviation factor of $\pm1$ means that two sequences are different by a factor
+of 2; $\pm2$ means by a factor of 4, etc.
+The distribution of this deviation can be examined empirically for any
+set of sequences.
+This analysis was based on a moving window across sequence identity.
+For the set of sequence pairs with identity inside the window, I empirically
+measure the interquartile range.
+I can plot this region against sequence identity:
+
+![](static/2014-09-17_fig1.png)
+
+The copy number of (arbitrarily) the first sequence codes the color of each
+point.
+You can see that high and low fold errors "require" low
+and high copy number genomes, respectively.
+The dotted lines are 50% prediction intervals based on an assumed
+normal distribution of $\log_2$ transformed fold differences (deviation
+factors) with variance estimated from a moving average of the squared
+deviation factor (this should work, since we know that the mean deviation
+factor must be 0, so every factor is its own error, and we're calculating the
+mean-squared-error, an estimate of variance).
+You can also see that the parametric assumptions appear to match empirical
+reality between identities of about 0.6 and 0.9.
+At lower identities, differences between empirical and
+parametric estimates may be because of small sample sizes.
+This could also be the case at higher copy numbers, or it could be an
+artifact of the analysis.
+
+I am going to try and write a single script which recreates this figure
+given raw data.
+
+
 ## TODOs ##
 - TODO: Collect the relationship between copy number
         and the copy number of the closest not-same-genome 16S leaf on the
